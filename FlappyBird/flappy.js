@@ -559,7 +559,15 @@ p.nominalBounds = new cjs.Rectangle(-41.6,-35.6,85.80000000000001,64.3);
 		function Pipes()
 		{
 		  this.scrolling = false;
-		}
+			
+		  this.distanceBetweenPipes = exportRoot.pipe1.x - exportRoot.pipe0.x;
+		  this.leftBound = -exportRoot.pipe0.nominalBounds.width;
+		
+		  this.maxPipeY = exportRoot.pipe0.y;
+		  this.minPipeY = exportRoot.pipe2.y;
+			
+		  this.pipes = [exportRoot.pipe0, exportRoot.pipe1, exportRoot.pipe2];
+			}
 		
 		Pipes.prototype.startScrolling = function()
 		{
@@ -576,6 +584,29 @@ p.nominalBounds = new cjs.Rectangle(-41.6,-35.6,85.80000000000001,64.3);
 		  if (this.scrolling == true)
 		  {
 		    console.log("Pipes::update() scrolling");
+			  this.updatePipePositions();
+			  this.checkLeftPipeIsOutsideScreen();
+		  }
+		}
+		
+		Pipes.prototype.updatePipePositions = function()
+		{
+		  for (var i = 0; i < this.pipes.length; i++)
+		  {
+		    var pipe = this.pipes[i];
+		    pipe.x -= Main.SCROLL_SPEED;
+		  }
+		}
+		
+		Pipes.prototype.checkLeftPipeIsOutsideScreen = function()
+		{
+		  var leftMostPipe = this.pipes[0];
+		  var rightMostPipe = this.pipes[2];
+		  if (leftMostPipe.x < this.leftBound)
+		  {
+		    leftMostPipe.x = rightMostPipe.x + this.distanceBetweenPipes;
+		    this.pipes.shift();
+		    this.pipes.push(leftMostPipe);
 		  }
 		}
 		function Ground()
